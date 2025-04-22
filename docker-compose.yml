@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+
+  app:
+    build:
+      context: ./sites/appteere_backend
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    working_dir: /var/www
+    volumes:
+      - ./sites/appteere_backend:/var/www
+
+    restart: unless-stopped
+
+
+  # Frontend Next.js
+  nextjs:
+    build:
+      context: ./sites/appteere_front
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+  # Base de données MySQL
+  db:
+    image: mysql:latest
+    container_name: appteere_db
+    environment:
+      MYSQL_ROOT_PASSWORD: Azertyuiop11-!
+      MYSQL_DATABASE: appteere
+      MYSQL_USER: astic
+      MYSQL_PASSWORD: Azertyuiop11-!
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+
+  # Serveur Web Nginx
+  nginx:
+    image: nginx:latest
+    container_name: laravel_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./sites/appteere_backend:/var/www
+      - ./sites/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./sites/reader_appteere:/var/reader
+      - ./sites/appteere_front:/var/appteere_front
+      - ./nginx-ssl-reader:/etc/nginx/ssl_reader
+      - ./nginx-ssl-manage:/etc/nginx/nginx_ssl_manage
+      - ./nginx-ssl:/etc/nginx/ssl
+    depends_on:
+      - nextjs
+      - app
+    restart: unless-stopped
+
+  # PHPMyAdmin
+  manage_phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: appteere_manage_phpmyadmin
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: Azertyuiop11-!
+    ports:
+      - "8181:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:

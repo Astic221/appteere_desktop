@@ -1,0 +1,11 @@
+/* styles/global.css */
+body {
+    font-family: Arial, sans-serif;
+  }
+  
+  @media (max-width: 768px) {
+    body {
+      background-color: lightblue;
+    }
+  }
+  
