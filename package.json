@@ -29,7 +29,8 @@
       "buildResources": "assets"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "assets/icone.png"
     },
     "win": {
       "target": "nsis"
